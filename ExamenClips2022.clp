@@ -1,18 +1,27 @@
 (deffacts data 
 	(pedido NARANJAS 2 MANZANAS 3 CAQUIS 0 UVA 1)
-	(entregado NARANJAS 2 MANZANAS 3 CAQUIS 0 UVA 1)
+	(entregado NARANJAS 0 MANZANAS 0 CAQUIS 0 UVA 0)
 
 	(almacen NARANJAS 10 MANZANAS 10 CAQUIS 10 UVA 10)
 
 	(robot NARANJAS 0 MANZANAS 0 CAQUIS 0 UVA 0)
 )
 
-(defrule move-up
+(defrule entrega-completa
+	(declare (salience 10))
 	?f1 <- (pedido NARANJAS ?n MANZANAS ?m CAQUIS ?c UVA ?u)
-	(not (obstacle ?x =(+ ?y 1) ))
-	(dimension ?column ?row)
-		(test (<> (+ ?y 1) (+ ?row 1)))
+	?f2 <- (entregado NARANJAS ?n MANZANAS ?m CAQUIS ?c UVA ?u)
 	=>
-	(assert (posRobot ?x (+ ?y 1) ?b ))
-	(printout t "muevo arriba " crlf)
+	(printout t "PEDIDO ENTREGADO CON EXITO " crlf)
+)
+
+(defrule move-left
+	?f1 <- (pedido NARANJAS ?n MANZANAS ?m CAQUIS ?c UVA ?u)
+
+	?f2 <- (robot NARANJAS ?nr MANZANAS ?mr CAQUIS ?cr UVA ?ur)
+		(test (< (+ (+ ?nr ?mr) (+ ?cr ?ur)) 3))
+		(test (< ?n 3))
+	=>
+	(assert (robot NARANJAS ?n MANZANAS ?mr CAQUIS ?cr UVA ?ur))
+	(printout t "muevo izquierda " crlf)
 )
