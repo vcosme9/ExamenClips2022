@@ -6,7 +6,7 @@
 )
 
 (defrule entrega-completa
-	(declare (salience 10))
+	(declare (salience 99))
 	?f1 <- (pedido NARANJAS ?n MANZANAS ?m CAQUIS ?c UVA ?u)
 	?f2 <- (entregado NARANJAS ?n MANZANAS ?m CAQUIS ?c UVA ?u)
 	=>
@@ -42,24 +42,57 @@
 (defrule muevo-caquis
 	?f1 <- (pedido NARANJAS ?n MANZANAS ?m CAQUIS ?c UVA ?u)
 	?f2 <- (entregado NARANJAS ?n_e MANZANAS ?m_e CAQUIS ?c_e UVA ?u_e)
-	?f3 <- (almacen NARANJAS ?n_a MANZANAS ?n_a CAQUIS ?c_a UVA ?u_a)
+	?f3 <- (almacen NARANJAS ?n_a MANZANAS ?m_a CAQUIS ?c_a UVA ?u_a)
 		(test (< ?c 3))
 		(test (> ?c 0))
 		(test (> ?c_a 0))
 	=>
 	(assert (entregado NARANJAS ?n_e MANZANAS ?m_e CAQUIS ?c UVA ?u_e))
-	(assert (almacen NARANJAS ?n_a MANZANAS ?m_a CAQUIS ?n_a UVA ?n_a))
+	(assert (almacen NARANJAS ?n_a MANZANAS ?m_a CAQUIS (- ?c_a ?c) UVA ?u_a))
 	(printout t "Me llevo los caquis " crlf)
 )
 
 (defrule muevo-uvas
 	?f1 <- (pedido NARANJAS ?n MANZANAS ?m CAQUIS ?c UVA ?u)
 	?f2 <- (entregado NARANJAS ?n_e MANZANAS ?m_e CAQUIS ?c_e UVA ?u_e)
-	?f3 <- (almacen NARANJAS ?n_a MANZANAS ?n_a CAQUIS ?n_a UVA ?n_a)
+	?f3 <- (almacen NARANJAS ?n_a MANZANAS ?m_a CAQUIS ?c_a UVA ?u_a)
 		(test (< ?u 3))
 		(test (> ?u 0))
 		(test (> ?u_a 0))
 	=>
 	(assert (entregado NARANJAS ?n_e MANZANAS ?m_e CAQUIS ?c_e UVA ?u))
-	(printout t "Me llevo los caquis " crlf)
+	(assert (almacen NARANJAS ?n_a MANZANAS ?m_a CAQUIS ?c_a UVA (- ?u_a ?u) )
+	(printout t "Me llevo las uvas " crlf)
+)
+
+(defrule sin-stock-naranjas
+	(declare (salience 10))
+	?f1 <- (almacen NARANJAS ?n_a MANZANAS ?m_a CAQUIS ?c_a UVA ?u_a)
+		(test (<= ?n_a 0))
+	=>
+	(printout t "SIN STOCK DE NARANJAS " crlf)
+)
+
+(defrule sin-stock-manzanas
+	(declare (salience 10))
+	?f1 <- (almacen NARANJAS ?n_a MANZANAS ?m_a CAQUIS ?c_a UVA ?u_a)
+		(test (<= ?m_a 0))
+	=>
+	(printout t "SIN STOCK DE MANZANAS " crlf)
+)
+
+(defrule sin-stock-caquis
+	(declare (salience 10))
+	?f1 <- (almacen NARANJAS ?n_a MANZANAS ?m_a CAQUIS ?c_a UVA ?u_a)
+		(test (<= ?c_a 0))
+	=>
+	(printout t "SIN STOCK DE CAQUIS " crlf)
+)
+
+(defrule sin-stock-uva
+	(declare (salience 10))
+	?f1 <- (almacen NARANJAS ?n_a MANZANAS ?m_a CAQUIS ?c_a UVA ?u_a)
+		(test (<= ?u_a 0))
+	=>
+	(printout t "SIN STOCK DE UVAS " crlf)
 )
